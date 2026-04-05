@@ -1,115 +1,472 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goldsocho - Coming Soon</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Price Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #D4A017;
+    --gold-light: #F5C842;
+    --gold-dark: #A07810;
+    --amber: #FF9500;
+    --bg: #0F0C07;
+    --surface: #1A1508;
+    --card: #221C0A;
+    --card-border: #3A3010;
+    --text: #F5EDD0;
+    --text-muted: #9A8A60;
+    --text-dim: #6A5A38;
+    --glow: rgba(212, 160, 23, 0.15);
+  }
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212,160,23,0.12), transparent),
+      radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,149,0,0.06), transparent);
+  }
 
-        body {
-            height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #000000, #1a1a1a);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+  header {
+    background: linear-gradient(135deg, #1A1205 0%, #0F0C07 100%);
+    border-bottom: 1px solid var(--card-border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+  }
 
-        .container {
-            text-align: center;
-        }
+  header .icon {
+    font-size: 22px;
+    filter: drop-shadow(0 0 8px var(--gold));
+  }
 
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 48px;
-            color: gold;
-            letter-spacing: 2px;
-        }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-        .tagline {
-            margin-top: 10px;
-            font-size: 16px;
-            color: #ccc;
-            letter-spacing: 3px;
-        }
+  main {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
 
-        .coming-soon {
-            margin-top: 30px;
-            font-size: 36px;
-            font-weight: 300;
-        }
+  .input-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(212,160,23,0.08);
+  }
 
-        .description {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #aaa;
-        }
+  .field {
+    margin-bottom: 20px;
+  }
 
-        .email-box {
-            margin-top: 30px;
-        }
+  .field:last-of-type { margin-bottom: 0; }
 
-        input[type="email"] {
-            padding: 12px;
-            width: 250px;
-            border: none;
-            outline: none;
-            border-radius: 5px;
-        }
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
 
-        button {
-            padding: 12px 20px;
-            margin-left: 10px;
-            border: none;
-            background: gold;
-            color: black;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+  input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 1.05rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
 
-        button:hover {
-            background: #ffd700;
-        }
+  input:focus {
+    border-color: var(--gold-dark);
+    box-shadow: 0 0 0 3px rgba(212,160,23,0.12);
+  }
 
-        footer {
-            margin-top: 40px;
-            font-size: 12px;
-            color: #777;
-        }
-    </style>
+  input::placeholder { color: var(--text-dim); }
+
+  .prefix-input {
+    position: relative;
+  }
+
+  .prefix-input span {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 1rem;
+    pointer-events: none;
+  }
+
+  .prefix-input input { padding-left: 28px; }
+
+  .suffix-input {
+    position: relative;
+  }
+
+  .suffix-input span {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  .btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--amber) 100%);
+    color: #1A0F00;
+    border: none;
+    border-radius: 14px;
+    padding: 17px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(212,160,23,0.3);
+  }
+
+  .btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(212,160,23,0.4);
+  }
+
+  .btn:active { transform: translateY(0); }
+
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 22px 22px 20px;
+    margin-bottom: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: none;
+  }
+
+  .result-card.visible {
+    animation: slideUp 0.4s ease forwards;
+  }
+
+  .result-card:nth-child(2).visible { animation-delay: 0.05s; }
+  .result-card:nth-child(3).visible { animation-delay: 0.1s; }
+  .result-card:nth-child(4).visible { animation-delay: 0.15s; }
+
+  @keyframes slideUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(212,160,23,0.12);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .karat {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .purity-badge {
+    background: rgba(212,160,23,0.1);
+    border: 1px solid rgba(212,160,23,0.2);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+
+  .line-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 0.875rem;
+  }
+
+  .line-item .name { color: var(--text-muted); }
+
+  .line-item .value {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .line-item .value.highlight {
+    color: var(--gold-light);
+    font-weight: 600;
+    font-size: 0.82rem;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 2px solid var(--gold-dark);
+  }
+
+  .total-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .total-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--gold-light), var(--amber));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .results-section { display: none; }
+  .results-section.active { display: block; }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--card-border), transparent);
+    margin: 8px 0;
+  }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo">Goldsocho</div>
-        <div class="tagline">Jewellery Brand</div>
+<header>
+  <span class="icon">🪙</span>
+  <h1>Gold Price Calculator</h1>
+</header>
 
-        <div class="coming-soon">Coming Soon</div>
-
-        <div class="description">
-            A new era of elegance and timeless jewellery is arriving soon.
-        </div>
-
-        <div class="email-box">
-            <input type="email" placeholder="Enter your email">
-            <button>Notify Me</button>
-        </div>
-
-        <footer>
-            © 2026 Goldsocho. All rights reserved.
-        </footer>
+<main>
+  <div class="input-card">
+    <div class="field">
+      <label>Present Day Gold Price (per gram)</label>
+      <div class="prefix-input">
+        <span>₹</span>
+        <input type="number" id="pricePerGram" placeholder="e.g. 9300" value="">
+      </div>
     </div>
 
+    <div class="field">
+      <label>Net Weight</label>
+      <div class="suffix-input">
+        <input type="number" id="weight" placeholder="e.g. 10" value="" step="0.001">
+        <span>grams</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Wastage Percentage</label>
+      <div class="suffix-input">
+        <input type="number" id="wastage" placeholder="e.g. 6" value="6" step="0.1">
+        <span>%</span>
+      </div>
+    </div>
+
+    <button class="btn" onclick="calculate()">Calculate Price</button>
+  </div>
+
+  <div class="results-section" id="results">
+    <p class="results-title">Price Breakdown</p>
+
+    <div class="result-card" id="card22">
+      <div class="card-header">
+        <span class="karat">22K Gold</span>
+        <span class="purity-badge">91.6% Purity</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Price per gram (with 3% GST)</span>
+        <span class="value highlight" id="ppg22">—</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Net Weight (grams)</span>
+        <span class="value" id="wt22">—</span>
+      </div>
+      <div class="divider"></div>
+      <div class="line-item">
+        <span class="name">Base Price</span>
+        <span class="value" id="base22">—</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Wastage</span>
+        <span class="value" id="waste22">—</span>
+      </div>
+      <div class="total-row">
+        <span class="total-label">Total Price</span>
+        <span class="total-value" id="total22">—</span>
+      </div>
+    </div>
+
+    <div class="result-card" id="card20">
+      <div class="card-header">
+        <span class="karat">20K Gold</span>
+        <span class="purity-badge">83.3% Purity</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Price per gram (with 3% GST)</span>
+        <span class="value highlight" id="ppg20">—</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Net Weight (grams)</span>
+        <span class="value" id="wt20">—</span>
+      </div>
+      <div class="divider"></div>
+      <div class="line-item">
+        <span class="name">Base Price</span>
+        <span class="value" id="base20">—</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Wastage</span>
+        <span class="value" id="waste20">—</span>
+      </div>
+      <div class="total-row">
+        <span class="total-label">Total Price</span>
+        <span class="total-value" id="total20">—</span>
+      </div>
+    </div>
+
+    <div class="result-card" id="card18">
+      <div class="card-header">
+        <span class="karat">18K Gold</span>
+        <span class="purity-badge">75% Purity</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Price per gram (with 3% GST)</span>
+        <span class="value highlight" id="ppg18">—</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Net Weight (grams)</span>
+        <span class="value" id="wt18">—</span>
+      </div>
+      <div class="divider"></div>
+      <div class="line-item">
+        <span class="name">Base Price</span>
+        <span class="value" id="base18">—</span>
+      </div>
+      <div class="line-item">
+        <span class="name">Wastage</span>
+        <span class="value" id="waste18">—</span>
+      </div>
+      <div class="total-row">
+        <span class="total-label">Total Price</span>
+        <span class="total-value" id="total18">—</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const fmt = (n) => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtWt = (n) => n.toFixed(3) + ' grams';
+
+  const KARATS = [
+    { k: 22, purity: 22/24, id: '22' },
+    { k: 20, purity: 20/24, id: '20' },
+    { k: 18, purity: 18/24, id: '18' },
+  ];
+
+  function calculate() {
+    const pricePerGram = parseFloat(document.getElementById('pricePerGram').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const wastage = parseFloat(document.getElementById('wastage').value) || 0;
+
+    if (!pricePerGram || !weight) {
+      alert('Please enter Gold Price and Net Weight.');
+      return;
+    }
+
+    KARATS.forEach(({ purity, id }) => {
+      const ppgRaw = pricePerGram * purity;
+      const ppgGST = ppgRaw * 1.03;
+      const basePrice = ppgGST * weight;
+      const wastageAmt = basePrice * (wastage / 100);
+      const total = basePrice + wastageAmt;
+
+      document.getElementById('ppg' + id).textContent = fmt(ppgGST);
+      document.getElementById('wt' + id).textContent = fmtWt(weight);
+      document.getElementById('base' + id).textContent = fmt(basePrice);
+      document.getElementById('waste' + id).textContent = fmt(wastageAmt);
+      document.getElementById('total' + id).textContent = fmt(total);
+    });
+
+    const section = document.getElementById('results');
+    section.classList.add('active');
+
+    // Re-trigger animations
+    ['card22', 'card20', 'card18'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.classList.remove('visible');
+      void el.offsetWidth;
+      setTimeout(() => el.classList.add('visible'), i * 60);
+    });
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Allow Enter key
+  document.querySelectorAll('input').forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+  });
+</script>
 </body>
 </html>
