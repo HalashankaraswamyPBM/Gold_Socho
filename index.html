@@ -663,7 +663,7 @@
   // ── Java-matched calculation logic ──────────────────────
   // Mirrors GoldCalculator.KaratResult constructor exactly
   function calcKarat(goldPrice, purity, netWeight, wastagePercent) {
-    const pricePerGram  = goldPrice * purity - (goldPrice * 0.03);
+    const pricePerGram  = goldPrice * purity - (goldPrice * 0.029);
     const basePrice     = netWeight * pricePerGram;
     const wastageAmount = basePrice * (wastagePercent / 100.0);
     const gst           = (basePrice + wastageAmount) * 0.03;   // 3% on (base + wastage)
